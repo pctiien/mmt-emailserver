@@ -10,11 +10,9 @@ def create_auth_message(user: str, password: str):
   base64_str = base64.b64encode(str.encode())
   return "AUTH PLAIN " + base64_str.decode()
 
-sock = socket(AF_INET, SOCK_STREAM)  
-sock.settimeout(5)
-context = ssl.create_default_context()
-sock.connect((config.mailServer, config.smtp))
-client_socket = context.wrap_socket(sock,server_hostname=config.mailServer)
+client_socket = socket(AF_INET, SOCK_STREAM)  
+client_socket.settimeout(5)
+client_socket.connect((config.mailServer, config.smtp))
 
 def recv_msg():
   try:
@@ -31,11 +29,6 @@ def send_msg(message, expect_return_msg=True):
 
 def ehlo():
     send_msg("EHLO")
-    send_msg("STARTTLS\r\n")
-
-def login(user, password):
-  auth_msg = create_auth_message(user, password)
-  send_msg(auth_msg)
 
 def quit():
   return send_msg("QUIT")
@@ -49,7 +42,6 @@ def send_mail(msg, from_addr, to_addr):
   send_msg(".")
 
 ehlo()
-login("maheenamin9@gmail.com", "zvlyyrliymgooyqw")
-send_mail("I am Maheen;) I am studing BS computer science in UET New Campus.",
-          "maheenamin9@gmail.com", "cs18b670@gmail.com")
+send_mail("I am PCTIEN;) I am studing US.",
+          "maheenamin9@gmail.com", "kakaka@gmail.com")
 quit()
