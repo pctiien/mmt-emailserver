@@ -1,5 +1,9 @@
 import json
-config_path = "config.json"
+#config_path = "config.json"
+
+current_directory = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(current_directory, 'config.json')
+
 with open(config_path,'r') as file:
     config = json.load(file)
 username = config["Username"]
