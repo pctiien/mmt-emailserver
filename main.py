@@ -1,4 +1,5 @@
 import sendmail as sending
+import getmail as getting
 import config
 
 choice = '0'
@@ -9,11 +10,20 @@ while(choice != '3'):
     choice = input("Enter your choice : ")
     print(choice)
     if(choice =='3'): 
+        sending.quit()
+        getting.quit()
         break
     elif(choice == '1'):
-        email_receiver = input("Email receiver : ")
-        email_receiver = [email.strip() for email in email_receiver.split(',')]
-        email_subject = input("Email subject : ")
-        email_msg = input("Email message : ")
-        sending.send_mail(subject=email_subject,from_addr=config.username,to_addr=email_receiver,msg=email_msg)
-sending.quit()
+        toEmail = input("To :")
+        ccEmail = input("CC :")
+        bccEmail = input("BCC :")
+        toEmail = [email.strip() for email in toEmail.split(',')]
+        ccEmail = [email.strip() for email in ccEmail.split(',')]
+        bccEmail = [email.strip() for email in bccEmail.split(',')]
+        email_subject = input("Subject :")
+        email_msg = input("Content :")
+        sending.send_mail(subject=email_subject,body=email_msg,from_addr=config.username,toEmail=toEmail,ccEmail=ccEmail,bccEmail=bccEmail)
+    elif(choice == '2'):
+        email_view = input("Email view :")
+        getting.getMail(email_view)
+
