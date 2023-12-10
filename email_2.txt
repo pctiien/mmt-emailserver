@@ -1,7 +1,0 @@
-From: pctien@gmail.com
-To: 10@gmail.com
-Cc: 11@gmail.com
-Bcc: 
-Subject: mmt
-mmt123
-.
