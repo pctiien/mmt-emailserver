@@ -1,6 +1,6 @@
 from socket import *
 import config
-import time
+import os
 
 bufferSize = 2048
 client_socket = socket(AF_INET, SOCK_STREAM)  
@@ -48,4 +48,10 @@ def send_mail(subject,body, from_addr, toEmail,ccEmail,bccEmail):
   #     send_msg(f"Subject: {subject}\r\n", expect_return_msg=False)
   #     send_msg(f"{header}\r\n{body}\r\n.", expect_return_msg=False)
 
+def create_folder(folder_name):
+  try:
+    os.makedirs(folder_name)
+  except OSError as e:
+    print(f"Error creating folder: {e}")
+    return False
 connect()

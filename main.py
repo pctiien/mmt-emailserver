@@ -25,5 +25,8 @@ while(choice != '3'):
         sending.send_mail(subject=email_subject,body=email_msg,from_addr=config.username,toEmail=toEmail,ccEmail=ccEmail,bccEmail=bccEmail)
     elif(choice == '2'):
         email_view = input("Email view :")
+        getting.login(username=email_view)
         getting.getMail(email_view)
+    elif(choice=='4'):
+        getting.deleteMail()
 
