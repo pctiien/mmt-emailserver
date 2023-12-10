@@ -1,9 +1,7 @@
 from socket import *
 import config
 import os
-import time
 from tkinter import *
-import base64
 
 
 from email import encoders
@@ -46,7 +44,6 @@ def send_mail(subject,body, from_addr, toEmail,ccEmail,bccEmail):
     email_header += f"Cc: {",".join(ccEmail)}\r\n"
  
   if len(bccEmail)>0 :
-    print("kakakakaa")
     email_header += f"Bcc: {",".join(bccEmail)}"
   send_msg(f"MAIL FROM:<{from_addr}>")
   
