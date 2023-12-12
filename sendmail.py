@@ -30,7 +30,7 @@ def ehlo():
     send_msg("EHLO",False)
     
 def quit():
-  return send_msg("QUIT",True)
+  return send_msg("QUIT",False)
 
 def connect():
   client_socket.connect((config.mailServer, config.smtp))

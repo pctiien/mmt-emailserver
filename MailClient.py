@@ -11,7 +11,7 @@ class MailClient:
         self.isRead = False
     def display_brief(self,num):
         isread = "(not read)" if self.isRead == False else ""
-        print(f"{num}. {isread} {self.sender}, {self.subject}")
+        print(f"{num}. {isread} <{self.sender}>, <{self.subject}>")
 
     def display_info(self):
         # print(f"From: {self.sender}")
