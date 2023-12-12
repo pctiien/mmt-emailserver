@@ -91,11 +91,5 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
 
     send_msg(".", expect_return_msg=False)
   
-def create_folder(folder_name):
-  try:
-    os.makedirs(folder_name)
-  except OSError as e:
-    print(f"Error creating folder: {e}")
-    return False
 connect()
 

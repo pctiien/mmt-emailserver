@@ -34,8 +34,8 @@ while(choice != '3'):
             
     elif(choice == '2'):
         email_view = input("Email view :")
+        if email_view =="":
+            email_view = config.username
         getting.login(username=email_view)
-        getting.getMail(email_view)
-    elif(choice=='4'):
-        getting.deleteMail()
+        getting.getMail(username=email_view)
 

@@ -4,5 +4,6 @@
     "MailServer": "127.0.0.1",
     "SMTP": 587 ,
     "POP3": 1100 ,
-    "Autoload": 10
+    "Autoload": 10,
+    "FolderPath": "H:/mailClient/"
 }
