@@ -55,7 +55,7 @@ def send_mail(subject,body, from_addr, toEmail,ccEmail,bccEmail):
     send_msg(f"Subject: {subject}\r\n{body}\r\n.", expect_return_msg=False)
  
 # gui file
-def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_path=None):
+def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_paths=None):
     msg = MIMEMultipart()
     msg["From"] = from_addr
     msg["To"] = ",".join(toEmail)
@@ -67,17 +67,17 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
     if len(bccEmail) > 0:
         print("kakakakaa")
         msg["Bcc"] = ",".join(bccEmail)
-
-    # Thêm nội dung email
+      
     msg.attach(MIMEText(body, 'plain'))
-
-    if attachment_path:
-        attachment = MIMEBase('application', 'octet-stream')
-        with open(attachment_path, 'rb') as attachment_file:
-            attachment.set_payload(attachment_file.read())
-        encoders.encode_base64(attachment)
-        attachment.add_header('Content-Disposition', f'attachment; filename="{attachment_path}"')
-        msg.attach(attachment)
+        
+    if attachment_paths:
+        for attachment_path in attachment_paths:
+            attachment = MIMEBase('application', 'octet-stream')
+            with open(attachment_path, 'rb') as attachment_file:
+                attachment.set_payload(attachment_file.read())
+            encoders.encode_base64(attachment)
+            attachment.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(attachment_path)}"')
+            msg.attach(attachment)
 
     send_msg(f"MAIL FROM:<{from_addr}>")
 
@@ -87,9 +87,18 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
 
     send_msg("DATA")
 
+
     send_msg(msg.as_string(), expect_return_msg=False)
 
     send_msg(".", expect_return_msg=False)
+
+# mang duong dan
+def input_attachment_paths(num_paths):
+  attachment_paths = []
+  for i in range(num_paths):
+    path = input(f"Nhap duong dan thu {i+1}: ")
+    attachment_paths.append(path)
+  return attachment_paths
   
 connect()
 
