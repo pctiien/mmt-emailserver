@@ -24,11 +24,13 @@ while(choice != '3'):
         email_msg = input("Content :")
         
         fileEmail = input("Co gui kem file(1.co, 2.khong): ")
+
+        
         if(fileEmail == '1'):
+            attachment_paths = []
             slFile = int(input("So luong file muon gui: "))
-            for i in range(1,slFile+1):
-                b = input(f"Cho biet duong dan thu {i} ")
-            sending.send_file(subject=email_subject,body=email_msg,from_addr=config.username,toEmail=toEmail,ccEmail=ccEmail,bccEmail=bccEmail,attachment_path=b)
+            attachment_paths = sending.input_attachment_paths(slFile)
+            sending.send_file(subject=email_subject, body=email_msg, from_addr=config.username, toEmail=toEmail, ccEmail=ccEmail, bccEmail=bccEmail, attachment_paths=attachment_paths)
         elif(fileEmail == '2'):
             sending.send_mail(subject=email_subject,body=email_msg,from_addr=config.username,toEmail=toEmail,ccEmail=ccEmail,bccEmail=bccEmail)
             
