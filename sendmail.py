@@ -3,7 +3,7 @@ import config
 import os
 from tkinter import *
 
-
+import mimetypes
 from email import encoders
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -67,14 +67,35 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
     if len(bccEmail) > 0:
         print("kakakakaa")
         msg["Bcc"] = ",".join(bccEmail)
-      
-    msg.attach(MIMEText(body, 'plain'))
+    
+    body_text = MIMEText(body)
+    body_text.set_charset('UTF-8')
+    body_text.set_param('format', 'flowed') 
+    msg.attach(body_text)
+    
+
         
     if attachment_paths:
+        #msg.attach(MIMEText(body, 'plain',"UTF-8"))
         for attachment_path in attachment_paths:
-            attachment = MIMEBase('application', 'octet-stream')
+              
+            file_size = get_file_size(attachment_path)
+
+            # kiem tra kich thuoc file
+            if file_size > 3 * 1024 * 1024:  
+                print(f"File {os.path.basename(attachment_path)} khong gui duoc do co kich thuoc lon hon 3MB")
+                continue 
+              
+            mime_type, _ = mimetypes.guess_type(attachment_path)
+            if mime_type is None:
+                mime_type = 'application/octet-stream'
+            
+            main_type, sub_type = mime_type.split('/', 1)
+            attachment = MIMEBase(main_type, sub_type)
+            
             with open(attachment_path, 'rb') as attachment_file:
                 attachment.set_payload(attachment_file.read())
+                
             encoders.encode_base64(attachment)
             attachment.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(attachment_path)}"')
             msg.attach(attachment)
@@ -86,11 +107,12 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
             send_msg(f"RCPT TO:<{mail}>")
 
     send_msg("DATA")
-
-
     send_msg(msg.as_string(), expect_return_msg=False)
-
     send_msg(".", expect_return_msg=False)
+    
+# tinh dung luong file
+def get_file_size(file_path):
+    return os.path.getsize(file_path)
 
 # mang duong dan
 def input_attachment_paths(num_paths):
