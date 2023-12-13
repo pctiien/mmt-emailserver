@@ -27,6 +27,7 @@ while(choice != '3'):
 
         
         if(fileEmail == '1'):
+            print("File duoc gui phai co kich thuoc nho hon 3MB")
             attachment_paths = []
             slFile = int(input("So luong file muon gui: "))
             attachment_paths = sending.input_attachment_paths(slFile)
