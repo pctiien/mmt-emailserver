@@ -14,7 +14,11 @@ while(choice != '3'):
         getting.quit()
         break
     elif(choice == '1'):
+        print("Please enter information, if more than one element, separate by commas, press \"Enter\" to skip: ")
         toEmail = input("To :")
+        while not toEmail:
+            print("This is the required field, please enter again.")
+            toEmail = input("To :")
         ccEmail = input("CC :")
         bccEmail = input("BCC :")
         toEmail = [email.strip() for email in toEmail.split(',')]
@@ -23,6 +27,7 @@ while(choice != '3'):
         email_subject = input("Subject :")
         email_msg = input("Content :")
         fileEmail = input("Co gui kem file(1.co, 2.khong): ")
+
         if(fileEmail == '1'):
             print("File duoc gui phai co kich thuoc nho hon 3MB")
             attachment_paths = []

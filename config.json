@@ -2,7 +2,7 @@
     "Username": "pctien@gmail.com",
     "Password": "pctien1401",
     "MailServer": "127.0.0.1",
-    "SMTP": 587 ,
+    "SMTP": 5877 ,
     "POP3": 1100 ,
     "Autoload": 10,
     "FolderPath": "H:/mailClient/"
