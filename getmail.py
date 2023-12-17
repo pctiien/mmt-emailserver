@@ -1,8 +1,6 @@
 import config
 from socket import*
 import re
-import tkinter as tk
-from tkinter import filedialog
 import os
 from MailClient import MailClient
 
@@ -24,14 +22,18 @@ def login(username=config.username,password=config.password):
 def getMail(username=config.username,password=config.password) :
     stat_command = "STAT\r\n"
     pop3_socket.sendall(stat_command.encode('utf-8'))
-    response = pop3_socket.recv(2048).decode('utf-8')
+    response = pop3_socket.recv(4096).decode('utf-8')
     if response.startswith('+OK'):
-        # print(response)
         num_messages = int(response.split()[1])
+        uidl_command = "UIDL\r\n"
+        pop3_socket.sendall(uidl_command.encode('utf-8'))
+        response = pop3_socket.recv(4096).decode('utf-8')
+        uidList = response.split('\r\n');
+        uidList = [item.split()[1].split('.')[0] for item in uidList if len(item)>3] 
         if num_messages > 0:
             list_mail = []
-            for message_number in range(0, num_messages):
-                retr_command = f"RETR {message_number+1}\r\n"
+            for i in range(0,len(uidList)):
+                retr_command = f"RETR {i+1}\r\n"
                 pop3_socket.sendall(retr_command.encode('utf-8'))
                 retr_response = pop3_socket.recv(4096).decode('utf-8')
                 retr_response = '\n'.join(retr_response.splitlines()[1:])
@@ -44,8 +46,9 @@ def getMail(username=config.username,password=config.password) :
                     bcc_addresses = [match.group(4).strip()] if match.group(4) else []
                     subject = match.group(5).strip()
                     body = match.group(6).strip()
-                    list_mail.append(MailClient(sender,to_addresses,cc_addresses,bcc_addresses,subject,body))
-                    list_mail[message_number].isRead = list_mail[message_number].checkRead(message_number+1,username)
+                    mail = MailClient(sender,to_addresses,cc_addresses,bcc_addresses,subject,body,uidList[i])
+                    mail.isRead = mail.checkRead()
+                    list_mail.append(mail)
                     # In ra cùng một dòng
             print("these are list of folders in your mailbox :")
             print("1. Inbox\n2.Project\n3.Important\n4.Work\n5.Spam")
@@ -79,13 +82,11 @@ def getMail(username=config.username,password=config.password) :
                         list_mailRead[int(choice)-1].isRead = True 
                         mailClient = list_mailRead[int(choice)-1]
                         folderType = mailClient.getFolderType()
-                        create_folder(config.folderpath,username,folderType,mailClient.getStrInfo(),int(choice))
+                        create_folder(config.folderpath,username,folderType,mailClient.getStrInfo(),mailClient.uid)
                         mailClient.display_info()
-                        download_choice = input("do you want to download this file ?(0=no, 1=yes)")
-                        if(download_choice == '1'):
-                            downloadMail(list_mailRead[int(choice)-1].getStrInfo(),choice)
-            else : 
-                print("There is no mail ")
+            else: print("There is no mail")
+        else : 
+            print("There is no mail ")
 
 def downloadMail(mailContent,mailId,path=""):
     path = input("Enter the path to save email (enter for default): ")
@@ -107,7 +108,7 @@ def create_folder(folderName,userName,folderType,mailContent,mailId):
   try:
     if os.path.exists(path) == False :
         os.makedirs(path) 
-    path += f"/email_{mailId}.txt"     
+    path += f"/{mailId}.txt"     
     with open(path, "w", encoding="utf-8") as file:
             file.write(mailContent)
             file.close()   

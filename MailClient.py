@@ -1,7 +1,7 @@
 import config
 import os
 class MailClient:
-    def __init__(self, sender="", to_addresses=[], cc_addresses=[], bcc_addresses=[], subject="", body=""):
+    def __init__(self, sender="", to_addresses=[], cc_addresses=[], bcc_addresses=[], subject="", body="",uid =""):
         self.sender = sender
         self.to_addresses = to_addresses
         self.cc_addresses = cc_addresses
@@ -9,6 +9,7 @@ class MailClient:
         self.subject = subject
         self.body = body
         self.isRead = False
+        self.uid = uid
     def display_brief(self,num):
         isread = "(not read)" if self.isRead == False else ""
         print(f"{num}. {isread} <{self.sender}>, <{self.subject}>")
@@ -46,8 +47,8 @@ class MailClient:
             or "crack" in self.body or "crack" in self.subject) :
             type = "Spam"
         return type
-    def checkRead(self,mailId,username):
-        path = f"{config.folderpath}/{username}/{self.getFolderType()}/email_{mailId}.txt"
+    def checkRead(self):
+        path = f"{config.folderpath}/{config.username}/{self.getFolderType()}/{self.uid}.txt"
         if os.path.exists(path) :
             return True
         return False     

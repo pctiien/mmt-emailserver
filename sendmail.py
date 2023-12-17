@@ -65,7 +65,6 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
         msg["Cc"] = ",".join(ccEmail)
 
     if len(bccEmail) > 0:
-        print("kakakakaa")
         msg["Bcc"] = ",".join(bccEmail)
     
     body_text = MIMEText(body)

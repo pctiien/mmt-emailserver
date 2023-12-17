@@ -22,10 +22,7 @@ while(choice != '3'):
         bccEmail = [email.strip() for email in bccEmail.split(',')]
         email_subject = input("Subject :")
         email_msg = input("Content :")
-        
         fileEmail = input("Co gui kem file(1.co, 2.khong): ")
-
-        
         if(fileEmail == '1'):
             print("File duoc gui phai co kich thuoc nho hon 3MB")
             attachment_paths = []
@@ -36,9 +33,9 @@ while(choice != '3'):
             sending.send_mail(subject=email_subject,body=email_msg,from_addr=config.username,toEmail=toEmail,ccEmail=ccEmail,bccEmail=bccEmail)
             
     elif(choice == '2'):
-        email_view = input("Email view :")
-        if email_view =="":
-            email_view = config.username
-        getting.login(username=email_view)
-        getting.getMail(username=email_view)
+        # email_view = input("Email view :")
+        # if email_view =="":
+        #     email_view = config.username
+        getting.login(username=config.username)
+        getting.getMail(username=config.username)
 
