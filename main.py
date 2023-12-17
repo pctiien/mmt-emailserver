@@ -14,7 +14,11 @@ while(choice != '3'):
         getting.quit()
         break
     elif(choice == '1'):
+        print("Please enter information, if more than one element, separate by commas, press \"Enter\" to skip: ")
         toEmail = input("To :")
+        while not toEmail:
+            print("This is the required field, please enter again.")
+            toEmail = input("To :")
         ccEmail = input("CC :")
         bccEmail = input("BCC :")
         toEmail = [email.strip() for email in toEmail.split(',')]

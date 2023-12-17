@@ -21,7 +21,7 @@ def recv_msg():
 
 def send_msg(message, expect_return_msg=True):
   client_socket.send(f"{message}\r\n".encode())
-  recv = recv_msg()
+  recv = recv_msg() 
   if expect_return_msg:
     print(recv)
     return recv
@@ -46,14 +46,13 @@ def send_mail(subject,body, from_addr, toEmail,ccEmail,bccEmail):
   if len(bccEmail)>0 :
     email_header += f"Bcc: {",".join(bccEmail)}"
   send_msg(f"MAIL FROM:<{from_addr}>")
-  
-  if len(toEmail+ccEmail)>0 :
-    for mail in toEmail + ccEmail : 
-      send_msg(f"RCPT TO:<{mail}>")
-    send_msg(f"DATA")
-    send_msg(f"{email_header}", expect_return_msg=False)
-    send_msg(f"Subject: {subject}\r\n{body}\r\n.", expect_return_msg=False)
- 
+
+  for mail in toEmail + ccEmail + bccEmail:
+    send_msg(f"RCPT TO:<{mail}>")
+  send_msg(f"DATA")
+  send_msg(f"{email_header}", expect_return_msg=False)
+  send_msg(f"Subject:{subject}\r\n{body}\r\n.", expect_return_msg=False)
+
 # gui file
 def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_paths=None):
     msg = MIMEMultipart()
@@ -100,13 +99,13 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
             attachment.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(attachment_path)}"')
             msg.attach(attachment)
 
-    send_msg(f"MAIL FROM:<{from_addr}>")
+    send_msg(f"MAIL FROM:<{from_addr}>\r\n")
 
     if len(toEmail + ccEmail) > 0:
         for mail in toEmail + ccEmail:
             send_msg(f"RCPT TO:<{mail}>")
 
-    send_msg("DATA")
+    send_msg("DATA\r\n")
     send_msg(msg.as_string(), expect_return_msg=False)
     send_msg(".", expect_return_msg=False)
     
