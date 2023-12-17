@@ -36,7 +36,7 @@ def connect():
   client_socket.connect((config.mailServer, config.smtp))
   ehlo()
   
-def send_mail(subject,body, from_addr, toEmail,ccEmail,bccEmail):
+def send_mail(subject, body, from_addr, toEmail,ccEmail,bccEmail):
   email_header = f"From: {from_addr}\r\n"
   email_header += f"To: {",".join(toEmail)}\r\n"
   
@@ -44,14 +44,15 @@ def send_mail(subject,body, from_addr, toEmail,ccEmail,bccEmail):
     email_header += f"Cc: {",".join(ccEmail)}\r\n"
  
   if len(bccEmail)>0 :
-    email_header += f"Bcc: {",".join(bccEmail)}"
+    email_header += f"Bcc: {",".join(bccEmail)}\r\n"
+  email_header +=f"Subject: {subject}\r\n"
   send_msg(f"MAIL FROM:<{from_addr}>")
 
   for mail in toEmail + ccEmail + bccEmail:
     send_msg(f"RCPT TO:<{mail}>")
   send_msg(f"DATA")
   send_msg(f"{email_header}", expect_return_msg=False)
-  send_msg(f"Subject:{subject}\r\n{body}\r\n.", expect_return_msg=False)
+  send_msg(f"{body}\r\n.", expect_return_msg=False)
 
 # gui file
 def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_paths=None):
@@ -105,7 +106,7 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
         for mail in toEmail + ccEmail:
             send_msg(f"RCPT TO:<{mail}>")
 
-    send_msg("DATA\r\n")
+    send_msg("DATA")
     send_msg(msg.as_string(), expect_return_msg=False)
     send_msg(".", expect_return_msg=False)
     

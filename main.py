@@ -29,7 +29,6 @@ while(choice != '3'):
         
         fileEmail = input("Co gui kem file(1.co, 2.khong): ")
 
-        
         if(fileEmail == '1'):
             print("File duoc gui phai co kich thuoc nho hon 3MB")
             attachment_paths = []
