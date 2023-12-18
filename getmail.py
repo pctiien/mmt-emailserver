@@ -7,7 +7,7 @@ from MailClient import MailClient
 # POP3 server settings
 host = config.mailServer
 port = config.pop3 
-username = "kakaka@gmail.com"
+username = config.username
 password = config.password
 pop3_socket = socket(AF_INET, SOCK_STREAM)  
 pop3_socket.connect((host,port))
@@ -19,6 +19,7 @@ def login(username=config.username,password=config.password):
     pass_command = f"PASS {password}\r\n"
     pop3_socket.sendall(pass_command.encode('utf-8'))
     response = pop3_socket.recv(1024).decode('utf-8')
+    return response
 def getMail(username=config.username,password=config.password) :
     stat_command = "STAT\r\n"
     pop3_socket.sendall(stat_command.encode('utf-8'))
