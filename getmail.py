@@ -88,13 +88,36 @@ def getMail(username=config.username,password=config.password) :
         else : 
             print("There is no mail ")
 
-def downloadMail(mailContent,mailId,path=""):
+# def downloadMail(mailContent,mailId,path=""):
+#     path = input("Enter the path to save email (enter for default): ")
+#     if path=="":
+#         path = f"email_{mailId}.txt"
+#     with open(path, "w", encoding="utf-8") as file:
+#         file.write(mailContent)
+#         file.close()
+
+def downloadMail(mailContent, mailId, attachmentContents=None, attachmentNames=None, path=""):
     path = input("Enter the path to save email (enter for default): ")
-    if path=="":
+    if path == "":
         path = f"email_{mailId}.txt"
+    
     with open(path, "w", encoding="utf-8") as file:
         file.write(mailContent)
-        file.close()
+
+    if attachmentContents is not None and attachmentNames is not None:
+        for attachmentContent, attachmentName in zip(attachmentContents, attachmentNames):
+            save_attachment = input(f"This email has an attached file '{attachmentName}', do you want to save it locally? (yes/no): ")
+            if save_attachment.lower() == 'yes':
+                download_attachment(attachmentContent, attachmentName)
+   
+def download_attachment(attachmentContent, attachmentName):
+    save_path = input("Enter the path to save the attachment (press Enter for default): ")
+    if save_path == "":
+        save_path = attachmentName
+
+    with open(save_path, "w", encoding="utf-8") as attachment_file:
+        attachment_file.write(attachmentContent)
+
 def deleteMail():
     pop3_socket.send(f"DELE {1}\r\n".encode())
     response = pop3_socket.recv(1024).decode()
