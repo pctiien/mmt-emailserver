@@ -45,7 +45,7 @@ def send_mail(subject, body, from_addr, toEmail,ccEmail,bccEmail):
  
   if len(bccEmail)>0 :
     email_header += f"Bcc: {",".join(bccEmail)}\r\n"
-  email_header +=f"Subject: {subject}\r\n"
+  email_header +=f"Subject: {subject}"
   send_msg(f"MAIL FROM:<{from_addr}>")
 
   for mail in toEmail + ccEmail + bccEmail:
