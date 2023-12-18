@@ -79,6 +79,8 @@ def getMail(username=config.username,password=config.password) :
                     elif int(choice) > len(list_mailRead) :
                         break;
                     else :
+                        if mail.hasAttachment():
+                            download_attachments(mail)
                         list_mailRead[int(choice)-1].isRead = True 
                         mailClient = list_mailRead[int(choice)-1]
                         folderType = mailClient.getFolderType()
@@ -96,6 +98,21 @@ def getMail(username=config.username,password=config.password) :
 #         file.write(mailContent)
 #         file.close()
 
+def download_attachments(mail):
+    attachmentContents = []
+    attachmentNames = []
+
+    for attachment in mail.attachments:
+        retr_attachment_command = f"RETR {attachment['index']}\r\n"
+        pop3_socket.sendall(retr_attachment_command.encode('utf-8'))
+        attachment_response = pop3_socket.recv(4096).decode('utf-8')
+        attachment_content = '\n'.join(attachment_response.splitlines()[1:])
+        attachmentContents.append(attachment_content)
+        attachmentNames.append(attachment['filename'])
+
+    downloadMail(mail.body, mail.uid, attachmentContents, attachmentNames)
+
+
 def downloadMail(mailContent, mailId, attachmentContents=None, attachmentNames=None, path=""):
     path = input("Enter the path to save email (enter for default): ")
     if path == "":
@@ -108,12 +125,12 @@ def downloadMail(mailContent, mailId, attachmentContents=None, attachmentNames=N
         for attachmentContent, attachmentName in zip(attachmentContents, attachmentNames):
             save_attachment = input(f"This email has an attached file '{attachmentName}', do you want to save it locally? (yes/no): ")
             if save_attachment.lower() == 'yes':
-                download_attachment(attachmentContent, attachmentName)
-   
-def download_attachment(attachmentContent, attachmentName):
+                download_attachment(attachmentContent, attachmentName, mailId)
+
+def download_attachment(attachmentContent, attachmentName, mailId):
     save_path = input("Enter the path to save the attachment (press Enter for default): ")
     if save_path == "":
-        save_path = attachmentName
+        save_path = f"attachment_{mailId}_{attachmentName}"
 
     with open(save_path, "w", encoding="utf-8") as attachment_file:
         attachment_file.write(attachmentContent)
