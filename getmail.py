@@ -20,24 +20,34 @@ def login(username=config.username,password=config.password):
     pop3_socket.sendall(pass_command.encode('utf-8'))
     response = pop3_socket.recv(1024).decode('utf-8')
     return response
+maxsize = 4096
+def recvall(size=maxsize):
+    fragments = []
+    while True:
+        chunk = pop3_socket.recv(size).decode()  # Get a chunk
+        fragments.append(chunk)
+        if chunk[-5:] == "\r\n.\r\n":
+            break  # EOF. No more data
+    message = "".join(fragments)
+    return message
 def getMail(username=config.username,password=config.password) :
     stat_command = "STAT\r\n"
     pop3_socket.sendall(stat_command.encode('utf-8'))
-    response = pop3_socket.recv(4096).decode('utf-8')
+    response = recvall(4096)
     if response.startswith('+OK'):
-        num_messages = int(response.split()[1])
-        uidl_command = "UIDL\r\n"
+        num_messages = int(response.split()[1])# so luong thu trong mailbox
+        uidl_command = "UIDL\r\n" #Xac dinh id cua moi thu
         pop3_socket.sendall(uidl_command.encode('utf-8'))
-        response = pop3_socket.recv(4096).decode('utf-8')
-        uidList = response.split('\r\n');
-        uidList = [item.split()[1].split('.')[0] for item in uidList if len(item)>3] 
-        if num_messages > 0:
+        response = recvall(4096)
+        uidList = response.split('\r\n')# tach cac dong
+        uidList = [item.split()[1].split('.')[0] for item in uidList if len(item)>3] #lay dong thu 1,
+        if num_messages > 0:                                                         #tach uid, tach tiep phan so
             list_mail = []
             for i in range(0,len(uidList)):
                 retr_command = f"RETR {i+1}\r\n"
                 pop3_socket.sendall(retr_command.encode('utf-8'))
-                retr_response = pop3_socket.recv(4096).decode('utf-8')
-                retr_response = '\n'.join(retr_response.splitlines()[1:])
+                retr_response = recvall(4096)
+                retr_response = retr_response.split('\n',1)[1]#tach message tu dong so 1
                 pattern = re.compile(r"From: (.+?)\nTo: (.+?)\nCc: (.+?)(?:\nBcc: (.+?))?\nSubject: (.+?)\n(.+)", re.DOTALL)
                 match = pattern.search(retr_response)
                 if match :
@@ -78,7 +88,7 @@ def getMail(username=config.username,password=config.password) :
                             list_mail[i].display_brief(i+1)
                     elif(choice==''): break;
                     elif int(choice) > len(list_mailRead) :
-                        break;
+                        break
                     else :
                         if mail.hasAttachment():
                             download_attachments(mail)
@@ -106,7 +116,7 @@ def download_attachments(mail):
     for attachment in mail.attachments:
         retr_attachment_command = f"RETR {attachment['index']}\r\n"
         pop3_socket.sendall(retr_attachment_command.encode('utf-8'))
-        attachment_response = pop3_socket.recv(4096).decode('utf-8')
+        attachment_response = recvall(4096)
         attachment_content = '\n'.join(attachment_response.splitlines()[1:])
         attachmentContents.append(attachment_content)
         attachmentNames.append(attachment['filename'])
@@ -138,12 +148,12 @@ def download_attachment(attachmentContent, attachmentName, mailId):
 
 def deleteMail():
     pop3_socket.send(f"DELE {1}\r\n".encode())
-    response = pop3_socket.recv(1024).decode()
+    response = recvall(1024)
     print(response)
 def quit():
     quit_command = "QUIT\r\n"
     pop3_socket.sendall(quit_command.encode('utf-8'))
-    response = pop3_socket.recv(1024).decode('utf-8')
+    response = recvall(1024)
 def create_folder(folderName,userName,folderType,mailContent,mailId):
   path = f"{folderName}/{userName}/{folderType}"
   try:
