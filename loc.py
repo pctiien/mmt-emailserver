@@ -11,14 +11,27 @@ def creatfolder(boxname):
     os.mkdir(path)
     return True
 
-def Filter(ArrFilters=FILTERS):
+def taodanhsachloc(ArrFilters=FILTERS):
+    ret=[]
     pattern = "From|Subject|Content|Spam"
-
     for fi in ArrFilters:
-        re.split(pattern,fi,re.IGNORECASE) #Do cac field quy uoc la khong phan biet hoa thuong(RFCs)
-
+        phanloai={}
+        tach=fi.split('-')
+        folder=tach[1]
+        signs=tach[0]
+        m=re.search(pattern,signs,re.IGNORECASE) #Do cac field quy uoc la khong phan biet hoa thuong(RFCs)
+        fieldname=m.group()
+        phanloai['field']=fieldname
+        phanloai['keywords']=[]
+        arrKey=signs[m.end():].split(',')
+        for key in arrKey:
+            phanloai['keywords'].append(key.strip(" \":"))
+        m=re.search("To folder: ",folder)
+        phanloai["mailbox"]=folder[m.end():]
+        ret.append(phanloai)
+    return ret
 def Createboxes(ArrFil=FILTERS):
     for line in ArrFil:
         print(line)
 
-Filter()
+print(taodanhsachloc())
