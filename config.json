@@ -5,5 +5,11 @@
     "SMTP": 5877 ,
     "POP3": 1100 ,
     "Autoload": 10,
-    "FolderPath": "H:/mailClient/"
+    "FolderPath": "H:/mailClient/",
+    "Filter": [
+        "From: ahihi@test.com, ahuhu@test.com- To folder: Project",
+        "Subject: \"urgent\", \"ASAP\"- To folder: Important",
+        "Content: \"report\", \"meeting\"- To folder: Work",
+        "Spam: \"virus\", \"hack\", \"crack\"- To folder: Spam"
+        ]
 }

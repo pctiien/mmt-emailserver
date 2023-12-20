@@ -24,10 +24,12 @@ maxsize = 4096
 def recvall(size=maxsize):
     fragments = []
     while True:
-        chunk = pop3_socket.recv(size).decode()  # Get a chunk
+        chunk = pop3_socket.recv(size).decode()
+        if not chunk:#Cài đặt cho lần nhận đầu tiên không có data nào sẽ thoát
+            break
         fragments.append(chunk)
-        if chunk[-5:] == "\r\n.\r\n":
-            break  # EOF. No more data
+        if chunk[-5:] == "\r\n.\r\n":#Khi nhan mot goi tin lon, den luc da nhan đủ không còn data,
+            break  # EOF. No more data           ham recv khong trả về '' mà đợi, vì thế có hai if
     message = "".join(fragments)
     return message
 def getMail(username=config.username,password=config.password) :
@@ -163,7 +165,7 @@ def create_folder(folderName,userName,folderType,mailContent,mailId):
     with open(path, "w", encoding="utf-8") as file:
             file.write(mailContent)
             file.close()   
-    return True;
+    return True
   except OSError as e:
     print(f"Error creating folder: {e}")
     return False

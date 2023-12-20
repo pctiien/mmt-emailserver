@@ -42,9 +42,7 @@ def send_mail(subject, body, from_addr, toEmail,ccEmail,bccEmail):
   
   if len(ccEmail[0])>0:
     email_header += f"Cc: {",".join(ccEmail)}\r\n"
- 
-  if bccEmail[0]!="":
-    email_header += f"Bcc: {",".join(bccEmail)}\r\n"
+
   email_header +=f"Subject: {subject}\r\n"
   send_msg(f"MAIL FROM:<{from_addr}>")
 
@@ -66,9 +64,6 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
 
     if len(ccEmail[0]) > 0:
         msg["Cc"] = ",".join(ccEmail)
-
-    if len(bccEmail[0]) > 0:
-        msg["Bcc"] = ",".join(bccEmail)
     
     body_text = MIMEText(body)
     body_text.set_charset('UTF-8')
