@@ -1,0 +1,18 @@
+def send_mail(subject, body, from_addr, toEmail,ccEmail,bccEmail):
+  email_header = f"From: {from_addr}\r\n"
+  email_header += f"To: {",".join(toEmail)}\r\n"
+  
+  if len(ccEmail[0])>0:
+    email_header += f"Cc: {",".join(ccEmail)}\r\n"
+
+  email_header +=f"Subject: {subject}\r\n"
+  send_msg(f"MAIL FROM:<{from_addr}>")
+
+  for mail in toEmail + ccEmail + bccEmail:
+    send_msg(f"RCPT TO:<{mail}>")
+  send_msg(f"DATA")
+  send_msg(f"{email_header}")
+  print(email_header)
+  reply=send_msg(f"{body}\r\n.")
+  if reply.split()[0]=="250":
+      print("Send successfully!")
