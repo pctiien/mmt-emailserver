@@ -27,15 +27,14 @@ while(choice != '3'):
         email_subject = input("Subject :")
         email_msg = input("Content :")
         fileEmail = input("Co gui kem file(1.co, 2.khong): ")
-
+        attachment_paths = []
         if(fileEmail == '1'):
             print("File duoc gui phai co kich thuoc nho hon 3MB")
-            attachment_paths = []
             slFile = int(input("So luong file muon gui: "))
             attachment_paths = sending.input_attachment_paths(slFile)
-            sending.send_file(subject=email_subject, body=email_msg, from_addr=config.username, toEmail=toEmail, ccEmail=ccEmail, bccEmail=bccEmail, attachment_paths=attachment_paths)
-        elif(fileEmail == '2'):
-            sending.send_mail(subject=email_subject,body=email_msg,from_addr=config.username,toEmail=toEmail,ccEmail=ccEmail,bccEmail=bccEmail)
+        sending.send_file(subject=email_subject, body=email_msg, from_addr=config.username,
+                          toEmail=toEmail, ccEmail=ccEmail, bccEmail=bccEmail,
+                          attachment_paths=attachment_paths)
             
     elif(choice == '2'):
         # email_view = input("Email view :")
