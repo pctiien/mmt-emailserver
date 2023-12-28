@@ -1,7 +1,6 @@
 from socket import *
 import config
 import os
-from tkinter import *
 
 import mimetypes
 from email import encoders
@@ -36,24 +35,6 @@ def connect():
   client_socket.connect((config.mailServer, config.smtp))
   ehlo()
   
-def send_mail(subject, body, from_addr, toEmail,ccEmail,bccEmail):
-  email_header = f"From: {from_addr}\r\n"
-  email_header += f"To: {",".join(toEmail)}\r\n"
-  
-  if len(ccEmail[0])>0:
-    email_header += f"Cc: {",".join(ccEmail)}\r\n"
-
-  email_header +=f"Subject: {subject}\r\n"
-  send_msg(f"MAIL FROM:<{from_addr}>")
-
-  for mail in toEmail + ccEmail + bccEmail:
-    send_msg(f"RCPT TO:<{mail}>")
-  send_msg(f"DATA")
-  send_msg(f"{email_header}")
-  print(email_header)
-  reply=send_msg(f"{body}\r\n.")
-  if reply.split()[0]=="250":
-      print("Send successfully!")
 
 # gui file
 def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_paths):
@@ -64,13 +45,12 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
 
     if len(ccEmail[0]) > 0:
         msg["Cc"] = ",".join(ccEmail)
-    
+
     body_text = MIMEText(body)
     body_text.set_charset('UTF-8')
-    body_text.set_param('format', 'flowed') 
+    body_text.set_param('format', 'flowed')
     msg.attach(body_text)
     if attachment_paths:
-        #msg.attach(MIMEText(body, 'plain',"UTF-8"))
         for attachment_path in attachment_paths:
               
             file_size = get_file_size(attachment_path)
@@ -91,7 +71,8 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
                 attachment.set_payload(attachment_file.read())
                 
             encoders.encode_base64(attachment)
-            attachment.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(attachment_path)}"')
+            attachment.add_header('Content-Disposition', f'attachment;'
+                                    f' filename="{os.path.basename(attachment_path)}"')#Thêm tên cho file cần gửi
             msg.attach(attachment)
 
     send_msg(f"MAIL FROM:<{from_addr}>\r\n")
