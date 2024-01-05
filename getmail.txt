@@ -1,0 +1,61 @@
+            list_mail = []
+            for i in range(0, len(uidList)):
+                retr_command = f"RETR {i + 1}\r\n"
+                pop3_socket.sendall(retr_command.encode('utf-8'))
+                retr_response = recvall(4096)
+                retr_response = retr_response.split('\n', 1)[1]  # tach message tu dong so 1
+                pattern = re.compile(r"From: (.+?)\nTo: (.+?)\nCc: (.+?)(?:\nBcc: (.+?))?\nSubject: (.+?)\n(.+)",
+                                     re.DOTALL)
+                match = pattern.search(retr_response)
+                if match:
+                    sender = match.group(1).strip()
+                    to_addresses = [match.group(2).strip()]
+                    cc_addresses = [match.group(3).strip()]
+                    bcc_addresses = [match.group(4).strip()] if match.group(4) else []
+                    subject = match.group(5).strip()
+                    body = match.group(6).strip()
+                    mail = MailClient(sender, to_addresses, cc_addresses, bcc_addresses, subject, body, uidList[i])
+                    mail.isRead = mail.checkRead()
+                    list_mail.append(mail)
+                    # In ra cùng một dòng
+            print("these are list of folders in your mailbox :")
+            print("1. Inbox\n2.Project\n3.Important\n4.Work\n5.Spam")
+            choice = '0'
+            choice = input("which folder do you want to read mail :")
+            list_mailRead = []
+            if choice == '1':
+                list_mailRead = [mail for mail in list_mail if mail.getFolderType() == "Inbox"]
+            elif choice == '2':
+                list_mailRead = [mail for mail in list_mail if mail.getFolderType() == "Project"]
+            elif choice == '3':
+                list_mailRead = [mail for mail in list_mail if mail.getFolderType() == "Important"]
+            elif choice == '4':
+                list_mailRead = [mail for mail in list_mail if mail.getFolderType() == "Work"]
+            elif choice == '5':
+                list_mailRead = [mail for mail in list_mail if mail.getFolderType() == "Spam"]
+            for i in range(0, len(list_mailRead)):
+                list_mailRead[i].display_brief(i + 1)
+            choice = '0'
+            if len(list_mailRead) > 0:
+                while True:
+                    choice = input("which email number you want to read: (enter = exit, 0 = list) ")
+                    if (choice == '0'):
+                        print("size:", len(list_mailRead))
+                        for i in range(0, len(list_mailRead)):
+                            list_mail[i].display_brief(i + 1)
+                    elif (choice == ''):
+                        break;
+                    elif int(choice) > len(list_mailRead):
+                        break
+                    else:
+                        if mail.hasAttachment():
+                            download_attachments(mail)
+                        list_mailRead[int(choice) - 1].isRead = True
+                        mailClient = list_mailRead[int(choice) - 1]
+                        folderType = mailClient.getFolderType()
+                        create_folder(config.folderpath, username, folderType, mailClient.getStrInfo(), mailClient.uid)
+                        mailClient.display_info()
+            else:
+                print("There is no mail")
+        else:
+            print("There is no mail ")
