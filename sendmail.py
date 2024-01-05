@@ -8,39 +8,34 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 
-
+host=config.mailServer
+smtpport=config.smtp
 bufferSize = 2048
-client_socket = socket(AF_INET, SOCK_STREAM)  
 
-def recv_msg():
+
+def recv_msg(client_socket):
   try:
     return client_socket.recv(bufferSize).decode()
   except timeout:
     return None
 
-def send_msg(message, expect_return_msg=False):
-  client_socket.send(f"{message}\r\n".encode())
-  recv = recv_msg()
-  if expect_return_msg:
-    print(recv)
-  return recv
-  
-def ehlo():
-    send_msg("EHLO")
-    
-def quit():
-  return send_msg("QUIT")
 
-def connect():
-  client_socket.connect((config.mailServer, config.smtp))
-  ehlo()
-  
+def send_msg(socket, message):
+  socket.sendall(f"{message}\r\n".encode())
+  recv = socket.recv(1024).decode()
+  return recv
+
 
 # gui file
 def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_paths):
+    client_socket = socket(AF_INET, SOCK_STREAM)  # Tạo 1 socket
+    client_socket.connect((host,smtpport))#Phải có
+    client_socket.recv(1024)
+    client_socket.sendall(f"EHLO\r\n".encode())
+    client_socket.recv(1024)
     msg = MIMEMultipart()
     msg["From"] = from_addr
-    msg["To"] = ",".join(toEmail)
+    msg["To"] = ",".join(toEmail) #Do là một mảng
     msg["Subject"] = subject
 
     if len(ccEmail[0]) > 0:
@@ -75,16 +70,23 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
                                     f' filename="{os.path.basename(attachment_path)}"')#Thêm tên cho file cần gửi
             msg.attach(attachment)
 
-    send_msg(f"MAIL FROM:<{from_addr}>\r\n")
-
+    client_socket.sendall(f"MAIL FROM:<{from_addr}>\r\n".encode())
+    client_socket.recv(1024)
     for mail in toEmail + ccEmail + bccEmail:
-         send_msg(f"RCPT TO:<{mail}>")
+         client_socket.sendall(f"RCPT TO:<{mail}>\r\n".encode())
+         client_socket.recv(1024)
 
-    send_msg("DATA")
-    send_msg(msg.as_string())
-    reply=send_msg(".")
-    if reply.split()[0] == "250":
+    client_socket.sendall(f"DATA\r\n".encode())
+    client_socket.recv(1024)
+    client_socket.sendall(msg.as_bytes())
+    client_socket.sendall(f"\r\n.\r\n".encode())
+    reply=client_socket.recv(1024).decode()
+    if reply.startswith("250"):
         print("Send successfully!")
+    else:
+        print("Error in sending the mail.")
+    client_socket.sendall("QUIT\r\n".encode())
+    client_socket.close()#Phải có
     
 # tinh dung luong file
 def get_file_size(file_path):
@@ -97,6 +99,5 @@ def input_attachment_paths(num_paths):
     path = input(f"Nhap duong dan thu {i+1}: ")
     attachment_paths.append(path)
   return attachment_paths
-  
-connect()
+
 
