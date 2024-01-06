@@ -146,7 +146,7 @@ while (choice != '3'):
                                                 new_name = input("Enter the new name (include file name extension): ")
                                                 local_file_name = os.path.join(input_direction, new_name)
                                         else:
-                                            break
+                                            continue
                                             # Không cần ghi thêm nữa
                                     source = os.path.join(mail_attatch_path, attachments[i])
                                     shutil.copy(source, local_file_name)
