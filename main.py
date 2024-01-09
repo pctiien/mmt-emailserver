@@ -7,7 +7,7 @@ import config
 import laythu
 import threading
 import time
-
+import shutil
 
 time_autoload=config.autoload
 
@@ -21,7 +21,14 @@ autoload_thread=threading.Thread(target=AutoLoad,args=(time_autoload,))
 autoload_thread.start()
 def isEmptyFolder(path):
     return not os.listdir(path)
-
+def move_folder(source_folder, destination_folder):
+    if source_folder==destination_folder :
+        return 
+    try:
+        shutil.move(source_folder, destination_folder)
+    except Exception as e:
+        print(f"Occur error when moving folder: {e}")
+       
 def printMailList(mails):
     for i in range(len(mails)):
         state = ""
@@ -90,6 +97,7 @@ while (choice != '3'):
                 print("There are not any mails.")
                 continue
             filename=os.path.join(folder_path,"quanly.json")
+
             fp=open(filename,'rt')
             mails=json.load(fp)
             fp.close()  #Mở 1, đợi đóng
@@ -122,33 +130,58 @@ while (choice != '3'):
                     fp=open(mail_text_path,'rt')
                     print(fp.read())
                     fp.close()
-                    if os.path.exists(mail_attatch_path):
-                        attachments=os.listdir(mail_attatch_path)
-                        n=len(attachments)
-                        if n>1:
-                            print(f"There are {n} attached files: ")
-                        if n==1:
-                            print("There is 1 attach file: ")
-                        for i in range(n):
-                            print(f"Name of the file number {i}: {attachments[i]}")
-                        for i in range(n):
-                            in_put=input(f"Do you want to save file \"{attachments[i]}\" (Please enter \"yes\" or \"no\")? ")
-                            if in_put=="yes":
-                                input_direction=input("Please enter the path which will save file: ")
-                                while not os.path.isdir(input_direction):
-                                    input_direction=input("Unvalid path or path does not exist, please enter again, press \"Enter\" to exit: ")
-                                if input_direction:
-                                    local_file_name=os.path.join(input_direction,attachments[i])
-                                    if os.path.exists(local_file_name):
-                                        solve_same_name=input("File existed, do you want to overwrite (enter 1) or change file name (enter 2)? (press \"Enter\" to exit)")
-                                        if solve_same_name == 1 or solve_same_name == 2:
-                                            if solve_same_name == 2:  # nếu là 2 thì đổi tên, một giữ nguyên tên
-                                                new_name = input("Enter the new name (include file name extension): ")
-                                                local_file_name = os.path.join(input_direction, new_name)
-                                        else:
-                                            continue
-                                            # Không cần ghi thêm nữa
-                                    source = os.path.join(mail_attatch_path, attachments[i])
-                                    shutil.copy(source, local_file_name)
-                                    print("Save successfully!")
+                    print(f"Mark as spam email ? (y/n)")
+                    input_choose = input();
+                    if input_choose =='y':
+                        workingPath=os.getcwd()
+                        spamFolderPath=os.path.join(workingPath,"Home",FolderArray[3])
+                        curFolderPath = emailfolder
+                        jsonSpamFile = os.path.join(spamFolderPath,'quanly.json')
+                        spamMails = []
+                        if(spamFolderPath != folder_path) :
+                            if not os.path.exists(jsonSpamFile) :
+                                with open(jsonSpamFile,'wt') as spam :
+                                    json.dump([],spam)
+                            with open(jsonSpamFile,'rt') as spam :
+                                spamMails = json.load(spam)
+                            spamMails.append(mails[choice_mail])
+                            with open(jsonSpamFile,'wt') as spam:
+                                json.dump(spamMails,spam)
+                            
+                            move_folder(curFolderPath,spamFolderPath)
+                            del mails[choice_mail]
+                            with open(filename,'wt') as curMailFile:
+                                json.dump(mails,curMailFile)
+                            print("This mail has been sent to spam folder")
+                        else : print("Both folders are already in the same directory")
+                    else :    
+                        if os.path.exists(mail_attatch_path):
+                            attachments=os.listdir(mail_attatch_path)
+                            n=len(attachments)
+                            if n>1:
+                                print(f"There are {n} attached files: ")
+                            if n==1:
+                                print("There is 1 attach file: ")
+                            for i in range(n):
+                                print(f"Name of the file number {i}: {attachments[i]}")
+                            for i in range(n):
+                                in_put=input(f"Do you want to save file \"{attachments[i]}\" (Please enter \"yes\" or \"no\")? ")
+                                if in_put=="yes":
+                                    input_direction=input("Please enter the path which will save file: ")
+                                    while not os.path.isdir(input_direction):
+                                        input_direction=input("Unvalid path or path does not exist, please enter again, press \"Enter\" to exit: ")
+                                    if input_direction:
+                                        local_file_name=os.path.join(input_direction,attachments[i])
+                                        if os.path.exists(local_file_name):
+                                            solve_same_name=input("File existed, do you want to overwrite (enter 1) or change file name (enter 2)? (press \"Enter\" to exit)")
+                                            if solve_same_name == 1 or solve_same_name == 2:
+                                                if solve_same_name == 2:  # nếu là 2 thì đổi tên, một giữ nguyên tên
+                                                    new_name = input("Enter the new name (include file name extension): ")
+                                                    local_file_name = os.path.join(input_direction, new_name)
+                                            else:
+                                                continue
+                                                # Không cần ghi thêm nữa
+                                        source = os.path.join(mail_attatch_path, attachments[i])
+                                        shutil.copy(source, local_file_name)
+                                        print("Save successfully!")
 

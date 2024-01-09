@@ -95,7 +95,7 @@ def locthu(message):
     sender = message_object["from"]
     text="FROM: "+message_object["from"]+"\nTO: "+message_object["To"]+"\n"
     if message_object["cc"]!= None:
-        text+="CC: "+message_object["bbc"]+"\n"
+        text+="CC: "+message_object["cc"]+"\n"
     if message_object["bbc"]!= None:
         text+="BBC: "+message_object["bbc"]+'\n'
     text+="SUBJECT: "+subject+"\r\n\r\n"

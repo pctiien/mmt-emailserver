@@ -1,0 +1,6 @@
+FROM: pctien@gmail.com
+TO: 2@gmail.com
+CC: 1@gmail.com
+SUBJECT: learning
+
+CONTENT: please please 
