@@ -63,6 +63,8 @@ def getMail(username=config.username, password=config.password):
             uidDictionary["UID"]=uid
             uidArrayDict.append(uidDictionary)
         if not os.path.exists("UIDstore.json"):
+            with open("UIDstore.json",'wt') as uidStorage:
+                json.dump([],uidStorage)
             containedUIDs=[]
         else:
             with open("UIDstore.json","r") as fp:

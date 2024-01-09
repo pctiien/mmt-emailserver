@@ -93,7 +93,7 @@ while (choice != '3'):
                 continue
             path=os.getcwd()
             folder_path=os.path.join(path,"Home",FolderArray[in_put])
-            if isEmptyFolder(path):
+            if isEmptyFolder(folder_path):
                 print("There are not any mails.")
                 continue
             filename=os.path.join(folder_path,"quanly.json")

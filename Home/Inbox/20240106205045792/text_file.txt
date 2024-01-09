@@ -1,6 +1,0 @@
-FROM: pctien@gmail.com
-TO: pctien@gmail.com
-CC: pctien@gmail.com
-SUBJECT: new
-
-CONTENT: newww

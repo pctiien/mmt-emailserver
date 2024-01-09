@@ -2,6 +2,7 @@ import email.parser
 import os
 import config
 import re
+import json
 from email import policy
 FILTERS = config.Boloc
 def creatfolder(boxname):
