@@ -2,8 +2,8 @@ import email.parser
 import os
 import config
 import re
-import json
 from email import policy
+
 FILTERS = config.Boloc
 def creatfolder(boxname):
     parent = os.getcwd()
@@ -93,12 +93,15 @@ def locthu(message):
     subject = message_object['subject']
     if subject is None:
         subject="NO SUBJECT"
-    sender = message_object["from"]
-    text="FROM: "+message_object["from"]+"\nTO: "+message_object["To"]+"\n"
+    sender = "NO SENDER"
+    text=''
+    if message_object["from"]!= None:
+        text+="FROM: "+message_object["from"]+"\n"
+        sender=message_object["from"]
+    if message_object["to"] != None:
+        text+="TO: "+message_object["To"]+"\n"
     if message_object["cc"]!= None:
         text+="CC: "+message_object["cc"]+"\n"
-    if message_object["bbc"]!= None:
-        text+="BBC: "+message_object["bbc"]+'\n'
     text+="SUBJECT: "+subject+"\r\n\r\n"
     content=''
     attachment=[]

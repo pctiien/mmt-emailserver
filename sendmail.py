@@ -52,7 +52,7 @@ def send_file(subject, body, from_addr, toEmail, ccEmail, bccEmail, attachment_p
 
             # kiem tra kich thuoc file
             if file_size > 3 * 1024 * 1024:  
-                print(f"File {os.path.basename(attachment_path)} khong gui duoc do co kich thuoc lon hon 3MB")
+                print(f"File {os.path.basename(attachment_path)} cannot be sent because it exceeds the 3 MB limit.")
                 continue 
               
             mime_type, _ = mimetypes.guess_type(attachment_path)
@@ -96,7 +96,7 @@ def get_file_size(file_path):
 def input_attachment_paths(num_paths):
   attachment_paths = []
   for i in range(num_paths):
-    path = input(f"Nhap duong dan thu {i+1}: ")
+    path = input(f"Enter the file path {i+1}: ")
     attachment_paths.append(path)
   return attachment_paths
 

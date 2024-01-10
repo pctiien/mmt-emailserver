@@ -7,7 +7,7 @@ import config
 import laythu
 import threading
 import time
-import shutil
+
 
 time_autoload=config.autoload
 
@@ -27,8 +27,7 @@ def move_folder(source_folder, destination_folder):
     try:
         shutil.move(source_folder, destination_folder)
     except Exception as e:
-        print(f"Occur error when moving folder: {e}")
-       
+        print(f"Occur error when moving folder: {e}")     
 def printMailList(mails):
     for i in range(len(mails)):
         state = ""
@@ -60,11 +59,11 @@ while (choice != '3'):
         bccEmail = [email.strip() for email in bccEmail.split(',')]
         email_subject = input("Subject: ")
         email_msg = input("Content: ")
-        fileEmail = input("Co gui kem file(1.co, 2.khong): ")
+        fileEmail = input("Attach file(1.yes, 2.no): ")
         attachment_paths = []
         if (fileEmail == '1'):
-            print("File duoc gui phai co kich thuoc nho hon 3MB")
-            slFile = int(input("So luong file muon gui: "))
+            print("File must be smaller than 3 MB")
+            slFile = int(input("Number of files to send: "))
             attachment_paths = sending.input_attachment_paths(slFile)
         sending.send_file(subject=email_subject, body=email_msg, from_addr=config.username,
                           toEmail=toEmail, ccEmail=ccEmail, bccEmail=bccEmail,
@@ -97,18 +96,20 @@ while (choice != '3'):
                 print("There are not any mails.")
                 continue
             filename=os.path.join(folder_path,"quanly.json")
-
             fp=open(filename,'rt')
             mails=json.load(fp)
             fp.close()  #Mở 1, đợi đóng
             printMailList(mails)
             while True:
                 # Vòng lặp thứ 2
-                choice_mail = input("which email number you want to read (press \"Enter\" to return Home folder, enter \"list\" to see mails list again): ")
+                choice_mail = input("Which email number you want to read (press \"Enter\" to return Home folder, enter \"list\" to see mails list again): ")
                 if choice_mail == '':
                     print("Returning to Home folder.")
                     break
                 if choice_mail == "list":
+                    fp = open(filename, 'rt')
+                    mails = json.load(fp)
+                    fp.close()  #Cập nhật lại email, có thể có thư mới
                     printMailList(mails)
                     continue
                 else:
@@ -130,31 +131,36 @@ while (choice != '3'):
                     fp=open(mail_text_path,'rt')
                     print(fp.read())
                     fp.close()
-                    print(f"Mark as spam email ? (y/n)")
-                    input_choose = input();
-                    if input_choose =='y':
+                    print(f"Mark as spam email (Please enter \"yes\" or \"no\")?")#Sửa lại cho đồng bộ
+                    input_choose = input()
+                    if input_choose =='yes':
                         workingPath=os.getcwd()
-                        spamFolderPath=os.path.join(workingPath,"Home",FolderArray[3])
-                        curFolderPath = emailfolder
-                        jsonSpamFile = os.path.join(spamFolderPath,'quanly.json')
+                        spamFolderPath=os.path.join(workingPath,"Home","Spam")#Thư mục Spam có thể có số thứ tự khác nhau, gán tên cụ thể
+                        curFolderPath = emailfolder#tên thư mục hiện tại
+                        jsonSpamFile = os.path.join(spamFolderPath,'quanly.json')#file quản lí của Spam
                         spamMails = []
                         if(spamFolderPath != folder_path) :
-                            if not os.path.exists(jsonSpamFile) :
-                                with open(jsonSpamFile,'wt') as spam :
-                                    json.dump([],spam)
-                            with open(jsonSpamFile,'rt') as spam :
-                                spamMails = json.load(spam)
-                            spamMails.append(mails[choice_mail])
+                            if os.path.exists(jsonSpamFile):#Khi tồn tại thì đọc, không vẫn là mảng rỗng
+                                with open(jsonSpamFile,'rt') as spam:
+                                    spamMails = json.load(spam)
+                            spamMails.append(mails[choice_mail]) #Không cần cập nhật mails
                             with open(jsonSpamFile,'wt') as spam:
                                 json.dump(spamMails,spam)
                             
                             move_folder(curFolderPath,spamFolderPath)
+                            fp = open(filename, 'rt')  # Cập nhật lại mails, có khả năng autoload đã cập nhật thư mới
+                            mails = json.load(fp)
+                            fp.close()
                             del mails[choice_mail]
-                            with open(filename,'wt') as curMailFile:
-                                json.dump(mails,curMailFile)
+                            if mails==[]:
+                                os.remove(filename) #Nếu đã không còn thư, xóa luôn file quanly.json
+                            else:
+                                with open(filename,'wt') as curMailFile:
+                                    json.dump(mails,curMailFile)
                             print("This mail has been sent to spam folder")
-                        else : print("Both folders are already in the same directory")
-                    else :    
+                        else :
+                            print("Both folders are already in the same directory")
+                    else:
                         if os.path.exists(mail_attatch_path):
                             attachments=os.listdir(mail_attatch_path)
                             n=len(attachments)
@@ -170,6 +176,8 @@ while (choice != '3'):
                                     input_direction=input("Please enter the path which will save file: ")
                                     while not os.path.isdir(input_direction):
                                         input_direction=input("Unvalid path or path does not exist, please enter again, press \"Enter\" to exit: ")
+                                        if input_direction=='':
+                                            break
                                     if input_direction:
                                         local_file_name=os.path.join(input_direction,attachments[i])
                                         if os.path.exists(local_file_name):

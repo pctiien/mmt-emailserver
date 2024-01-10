@@ -63,8 +63,6 @@ def getMail(username=config.username, password=config.password):
             uidDictionary["UID"]=uid
             uidArrayDict.append(uidDictionary)
         if not os.path.exists("UIDstore.json"):
-            with open("UIDstore.json",'wt') as uidStorage:
-                json.dump([],uidStorage)
             containedUIDs=[]
         else:
             with open("UIDstore.json","r") as fp:
@@ -88,11 +86,8 @@ def getMail(username=config.username, password=config.password):
                 path=os.getcwd()
                 managefile=os.path.join(path,"Home",folder,'quanly.json')
                 TatCaThu=[]
-                if not os.path.exists(managefile):
-                    with open(managefile,'wt') as mf:
-                        json.dump([],mf)
                 if os.path.exists(managefile):
-                    fp=open(managefile,'rt')#Mở 2
+                    fp=open(managefile,'rt')#Mở 2, đã cập nhật luôn trạng thái
                     TatCaThu=json.load(fp)
                     fp.close()
                 TatCaThu.append(tempdict)

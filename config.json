@@ -4,8 +4,7 @@
     "MailServer": "127.0.0.1",
     "SMTP": 5877 ,
     "POP3": 1100 ,
-    "Autoload": 10,
-    "FolderPath": "H:/mailClient/",
+    "Autoload": 10,   
     "Filter": [
         "From: ahihi@test.com, ahuhu@test.com- To folder: Project",
         "Subject: \"urgent\", \"ASAP\"- To folder: Important",
