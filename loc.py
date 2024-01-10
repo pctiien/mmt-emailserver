@@ -75,7 +75,8 @@ def Find(message_object,content,field,keywords):
     ret=False
     if field.casefold()!="Content".casefold():
         for i in keywords:
-            ret=(message_object[field].find(i)>=0)#Trả về true nếu tìm thấy keyword
+            if message_object[field]!=None:
+                ret=(message_object[field].find(i)>=0)#Trả về true nếu tìm thấy keyword
             if ret==True:
                 break
     else:
